@@ -23,7 +23,7 @@ pipeline {
                             sh """
                                 sonar-scanner \
                                 -Dsonar.verbose=true \
-                                -Dsonar.organization=mnr143_key \
+                                -Dsonar.organization=mnr143-key \
                                 -Dsonar.projectKey=mnr143-key_maa \
                                 -Dsonar.projectName=maa \
                                 -Dsonar.language=java \
