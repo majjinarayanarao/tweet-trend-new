@@ -14,12 +14,26 @@ pipeline {
             }
         }
         stage('SonarQube analysis') {
-            environment {
-                scannerHome = tool 'SonarQube_Scanner';
-            }
             steps {
-                withSonarQubeEnv('SonarQubeinstallations') {
-                    sh "${scannerHome}/bin/sonar-scanner"
+                script {
+                    withSonarQubeEnv('SonarQubeinstallations') {
+                        // Set SonarQube properties
+                        def scannerHome = tool 'SonarQube_Scanner';
+                        withEnv(["PATH+MAVEN=${scannerHome}/bin"]) {
+                            sh """
+                                sonar-scanner \
+                                -Dsonar.verbose=true \
+                                -Dsonar.organization=mnr143_key \
+                                -Dsonar.projectKey=mnr143-key_maa \
+                                -Dsonar.projectName=maa \
+                                -Dsonar.language=java \
+                                -Dsonar.sourceEncoding=UTF-8 \
+                                -Dsonar.sources=. \
+                                -Dsonar.java.binaries=target/classes \
+                                -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+                            """
+                        }
+                    }
                 }
             }
         }
