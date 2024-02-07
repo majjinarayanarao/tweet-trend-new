@@ -5,18 +5,18 @@ pipeline {
         }
     }
     environment {
-        PATH = "/opt/apache-maven-3.9.6/bin:$PATH"
+        PATH = "/opt/apache-maven-3.9.2/bin:$PATH"
     }
     stages {
-        stage("build"){
+        stage("build") {
             steps {
                 echo "----------- build started ----------"
                 sh 'mvn clean deploy -Dmaven.test.skip=true'
                 echo "----------- build completed ----------"
             }
         }
-        stage("test"){
-            steps{
+        stage("test") {
+            steps {
                 echo "----------- unit test started ----------"
                 sh 'mvn surefire-report:report'
                 echo "----------- unit test completed ----------"
@@ -26,13 +26,15 @@ pipeline {
             environment {
                 scannerHome = tool 'SonarQube_Scanner'
             }
-            steps{
-                withSonarQubeEnv('SonarQubeinstallations') { 
-                    sh "${scannerHome}/bin/sonar-scanner"
+            steps {
+                script {
+                    withSonarQubeEnv('SonarQubeinstallations') { 
+                        sh "${scannerHome}/bin/sonar-scanner"
+                    }
                 }
             }
         }
-        stage("Quality Gate"){
+        stage("Quality Gate") {
             steps {
                 script {
                     timeout(time: 1, unit: 'HOURS') {
