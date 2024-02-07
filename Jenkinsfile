@@ -15,15 +15,6 @@ pipeline {
                 echo "----------- Build completed ----------"
             }
         }
-        stage('SonarQube Analysis') {
-            environment {
-                scannerHome = tool 'SonarQube_Scanner'
-            }
-            steps {
-                withSonarQubeEnv('SonarQubeinstallations') { 
-                    sh "${scannerHome}/bin/sonar-scanner"
-                }
-            }
         }
     }
 }
