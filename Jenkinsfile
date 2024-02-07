@@ -5,33 +5,40 @@ pipeline {
         }
     }
     environment {
-        PATH = "/opt/apache-maven-3.9.6/bin:$PATH"
+        PATH = "/opt/apache-maven-3.9.2/bin:$PATH"
     }
     stages {
-        stage('build') {
+        stage("build"){
             steps {
-                sh 'mvn clean deploy'
+                echo "----------- build started ----------"
+                sh 'mvn clean deploy -Dmaven.test.skip=true'
+                echo "----------- build completed ----------"
+            }
+        }
+        stage("test"){
+            steps{
+                echo "----------- unit test started ----------"
+                sh 'mvn surefire-report:report'
+                echo "----------- unit test completed ----------"
             }
         }
         stage('SonarQube analysis') {
+            environment {
+                scannerHome = tool 'valaxy-sonar-scanner'
+            }
+            steps{
+                withSonarQubeEnv('valaxy-sonarqube-server') { 
+                    sh "${scannerHome}/bin/sonar-scanner"
+                }
+            }
+        }
+        stage("Quality Gate"){
             steps {
                 script {
-                    withSonarQubeEnv('SonarQubeinstallations') {
-                        // Set SonarQube properties
-                        def scannerHome = tool 'SonarQube_Scanner';
-                        withEnv(["PATH+MAVEN=${scannerHome}/bin"]) {
-                            sh """
-                                sonar-scanner \
-                                -Dsonar.verbose=true \
-                                -Dsonar.organization=mnr143-key \
-                                -Dsonar.projectKey=mnr143-key_maa \
-                                -Dsonar.projectName=maa \
-                                -Dsonar.language=java \
-                                -Dsonar.sourceEncoding=UTF-8 \
-                                -Dsonar.sources=. \
-                                -Dsonar.java.binaries=target/classes \
-                                -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
-                            """
+                    timeout(time: 1, unit: 'HOURS') {
+                        def qg = waitForQualityGate() 
+                        if (qg.status != 'OK') {
+                            error "Pipeline aborted due to quality gate failure: ${qg.status}"
                         }
                     }
                 }
