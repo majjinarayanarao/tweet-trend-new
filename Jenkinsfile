@@ -8,14 +8,14 @@ pipeline {
         PATH = "/opt/apache-maven-3.9.6/bin:$PATH"
     }
     stages {
-        stage("build") {
+        stage("Build") {
             steps {
-                echo "----------- build started ----------"
+                echo "----------- Build started ----------"
                 sh 'mvn clean deploy'
-                echo "----------- build completed ----------"
+                echo "----------- Build completed ----------"
             }
         }
-        stage('SonarQube analysis') {
+        stage('SonarQube Analysis') {
             environment {
                 scannerHome = tool 'SonarQube_Scanner'
             }
