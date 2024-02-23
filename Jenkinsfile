@@ -9,14 +9,14 @@ pipeline {
     stage('Checkout') {
       steps {
         sh 'echo passed' // Just a placeholder command, you can remove or replace it
-        //git branch: 'main', url: 'https://github.com/iam-veeramalla/Jenkins-Zero-To-Hero.git'
+        git branch: 'main', url: 'https://github.com/iam-veeramalla/Jenkins-Zero-To-Hero.git'
       }
     }
     stage('Build and Test') {
       steps {
         sh 'ls -ltr' // Just a diagnostic command to list files in the current directory
         // Build the project and create a JAR file
-        sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package'
+        sh 'cd tweet-trend-new && mvn clean package'
       }
     }
     stage('Static Code Analysis') {
@@ -27,7 +27,7 @@ pipeline {
         // Retrieve SonarQube authentication token from Jenkins credentials
         withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
           // Execute Maven SonarQube analysis
-          sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
+          sh 'cd tweet-trend-new  && mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
         }
       }
     }
