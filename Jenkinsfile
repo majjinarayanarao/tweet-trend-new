@@ -19,7 +19,7 @@ pipeline {
             steps {
                 // Navigate to the project directory and build the project
                 dir('tweet-trend-new') {
-                    sh 'mvn clean package'
+                    sh 'mvn clean install'
                 }
             }
         }
