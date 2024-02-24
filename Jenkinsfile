@@ -1,9 +1,11 @@
 pipeline {
     agent {
-        docker {
-            image 'abhishekf5/maven-abhishek-docker-agent:v1'
-            args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // mount Docker socket to access the host's Docker daemon
+        node {
+            label 'maven'
         }
+    }
+    environment {
+        PATH = "/opt/apache-maven-3.9.2/bin:$PATH"
     }
     stages {
         stage('Checkout') {
