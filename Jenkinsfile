@@ -1,10 +1,14 @@
 pipeline {
     agent {
         node {
-            ladel'maven'
+            label 'maven'
         }
     }
-    satages {
-        stage('clone ') {
-            setps {
-                git branch: 'new' , url: 
+    stages {
+        stage('clone') {
+            steps {
+                git branch: 'new', url: 'https://github.com/majjinarayanarao/tweet-trend-new.git'
+            }
+        }
+    }
+}
