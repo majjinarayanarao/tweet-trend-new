@@ -25,7 +25,7 @@ pipeline {
       }
       steps {
         // Retrieve SonarQube authentication token from Jenkins credentials
-        withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
+        withCredentials([string(credentialsId: 'sonarqube', variable: 'jenkins')]) {
           // Execute Maven SonarQube analysis
           sh 'cd tweet-trend-new  && mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
         }
