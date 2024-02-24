@@ -33,7 +33,7 @@ pipeline {
                 withCredentials([string(credentialsId: 'sonarqube', variable: 'jenkins')]) {
                     // Execute Maven SonarQube analysis
                     dir('tweet-trend-new') {
-                        sh "mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=$SONAR_URL"
+                        sh "mvn sonar:sonar -Dsonar.login=\$jenkins -Dsonar.host.url=$SONAR_URL"
                     }
                 }
             }
