@@ -1,27 +1,34 @@
 pipeline {
+  agent any
+  
   stages {
     stage('Checkout') {
       steps {
-        sh 'echo passed' // Just a placeholder command, you can remove or replace it
+        // Checkout the code from the specified repository and branch
         git branch: 'main', url: 'https://github.com/iam-veeramalla/Jenkins-Zero-To-Hero.git'
       }
     }
+    
     stage('Build and Test') {
       steps {
-        sh 'ls -ltr' // Just a diagnostic command to list files in the current directory
-        // Build the project and create a JAR file
-        sh 'cd tweet-trend-new && mvn clean package'
+        // Navigate to the project directory and build the project
+        dir('tweet-trend-new') {
+          sh 'mvn clean package'
+        }
       }
     }
+    
     stage('Static Code Analysis') {
       environment {
-        SONAR_URL = "http://34.201.116.83:9000" // Define SonarQube server URL
+        SONAR_URL = "https://sonarcloud.io/" // Define SonarQube server URL
       }
       steps {
         // Retrieve SonarQube authentication token from Jenkins credentials
         withCredentials([string(credentialsId: 'sonarqube', variable: 'jenkins')]) {
           // Execute Maven SonarQube analysis
-          sh 'cd tweet-trend-new  && mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
+          dir('tweet-trend-new') {
+            sh "mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=$SONAR_URL"
+          }
         }
       }
     }
