@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('GetCode') {
             steps {
-                git 'git@github.com:majjinarayanarao/tweet-trend-new.git'
+                git 'https://github.com/majjinarayanarao/tweet-trend-new.git'
             }
         }
 
