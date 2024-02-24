@@ -1,50 +1,43 @@
-pipeline {
-    agent {
-        node {
-            label 'maven'
-        }
-    }
-    environment {
-        PATH = "/opt/apache-maven-3.9.2/bin:$PATH"
-    }
-    stages {
-        stage("build") {
-            steps {
-                echo "----------- build started ----------"
-                sh 'mvn clean deploy -Dmaven.test.skip=true'
-                echo "----------- build completed ----------"
-            }
-        }
-        stage("test") {
-            steps {
-                echo "----------- unit test started ----------"
-                sh 'mvn surefire-report:report'
-                echo "----------- unit test completed ----------"
-            }
-        }
-        stage('SonarQube analysis') {
-            environment {
-                scannerHome = tool 'SonarQube_Scanner'
-            }
-            steps {
-                script {
-                    withSonarQubeEnv('SonarQubeinstallations') { 
-                        sh "${scannerHome}/bin/sonar-scanner"
-                    }
-                }
-            }
-        }
-        stage("Quality Gate") {
-            steps {
-                script {
-                    timeout(time: 1, unit: 'HOURS') {
-                        def qg = waitForQualityGate() 
-                        if (qg.status != 'OK') {
-                            error "Pipeline aborted due to quality gate failure: ${qg.status}"
-                        }
-                    }
-                }
-            }
-        }
-    }
+pipeline{
+
+agent any
+
+environment {
+
+PATH = "$PATH:/opt/apache-maven-3.6.3/bin"
+
+}
+
+stages{
+
+stage('GetCode'){
+
+steps{
+
+git 'https://github.com/ashokitschool/maven-web-app.git'
+
+}
+
+}
+
+stage('Build'){
+
+steps{
+
+sh 'mvn clean package'
+
+}
+
+}
+
+stage('SonarQube analysis') {
+
+steps{
+
+with SonarQubeFny/Sonar Server-7 81
+
+sh "mvn sonar:sonar
+}
+}
+}
 }
