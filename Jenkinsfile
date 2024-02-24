@@ -14,13 +14,21 @@ pipeline {
             }
         }
 
-        stage('Build and Test') {
-            steps {
-                dir('tweet-trend-new') {
-                    sh 'mvn -f pom.xml clean install'
-                }
-            }
+       stage('Build and Test') {
+    steps {
+        dir('tweet-trend-new') {
+            // Print out the current directory contents
+            sh 'ls -l'
+
+            // Print out the path to the pom.xml file
+            sh 'pwd'
+
+            // Run Maven command
+            sh 'mvn -f pom.xml clean install'
         }
+    }
+}
+
 
         stage('Static Code Analysis') {
             environment {
