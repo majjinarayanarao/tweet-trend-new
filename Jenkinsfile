@@ -1,48 +1,30 @@
 pipeline {
-    agent {
-        node {
-            label 'maven'
-        }
+    agent any
+
+    tools {
+        // Install the Maven version configured as "M3" and add it to the path.
+        maven "/opt/apache-maven-3.9.2/bin:$PATH"
     }
-    environment {
-        PATH = "/opt/apache-maven-3.9.2/bin:$PATH"
-    }
+
     stages {
-        stage("build") {
+        stage('Build') {
             steps {
-                echo "----------- build started ----------"
-                sh 'mvn clean deploy -Dmaven.test.skip=true'
-                echo "----------- build completed ----------"
+                // Get some code from a GitHub repository
+                git 'https://github.com/iam-veeramalla/Jenkins-Zero-To-Hero.git'
+
+                // Run Maven on a Unix agent.
+                sh "mvn -Dmaven.test.failure.ignore=true clean package"
+
+                // To run Maven on a Windows agent, use
+                // bat "mvn -Dmaven.test.failure.ignore=true clean package"
             }
-        }
-        stage("test") {
-            steps {
-                echo "----------- unit test started ----------"
-                sh 'mvn surefire-report:report'
-                echo "----------- unit test completed ----------"
-            }
-        }
-        stage('SonarQube analysis') {
-            environment {
-                scannerHome = tool 'SonarQube_Scanner'
-            }
-            steps {
-                script {
-                    withSonarQubeEnv('SonarQubeinstallations') { 
-                        sh "${scannerHome}/bin/sonar-scanner"
-                    }
-                }
-            }
-        }
-        stage("Quality Gate") {
-            steps {
-                script {
-                    timeout(time: 1, unit: 'HOURS') {
-                        def qg = waitForQualityGate() 
-                        if (qg.status != 'OK') {
-                            error "Pipeline aborted due to quality gate failure: ${qg.status}"
-                        }
-                    }
+
+            post {
+                // If Maven was able to run the tests, even if some of the test
+                // failed, record the test results and archive the jar file.
+                success {
+                    junit '**/target/surefire-reports/TEST-*.xml'
+                    archiveArtifacts 'target/*.jar'
                 }
             }
         }
