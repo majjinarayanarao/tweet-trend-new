@@ -27,7 +27,7 @@ pipeline {
                 SONAR_URL = "https://sonarcloud.io/"
             }
             steps {
-                withCredentials([string(credentialsId: 'sonarqube', variable: 'jenkins')]) {
+                withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
                     dir('tweet-trend-new') {
                         sh "mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=$SONAR_URL"
                     }
