@@ -1,43 +1,29 @@
-pipeline{
+pipeline {
+    agent any
 
-agent any
+    environment {
+        PATH = "$PATH:/opt/apache-maven-3.6.3/bin"
+    }
 
-environment {
+    stages {
+        stage('GetCode') {
+            steps {
+                git 'git@github.com:majjinarayanarao/tweet-trend-new.git'
+            }
+        }
 
-PATH = "$PATH:/opt/apache-maven-3.6.3/bin"
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
 
-}
-
-stages{
-
-stage('GetCode'){
-
-steps{
-
-git 'https://github.com/ashokitschool/maven-web-app.git'
-
-}
-
-}
-
-stage('Build'){
-
-steps{
-
-sh 'mvn clean package'
-
-}
-
-}
-
-stage('SonarQube analysis') {
-
-steps{
-
-with SonarQubeFny/Sonar Server-7 81
-
-sh "mvn sonar:sonar
-}
-}
-}
+        stage('SonarQube analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube-Scanner') {
+                    sh "mvn sonar:sonar"
+                }
+            }
+        }
+    }
 }
